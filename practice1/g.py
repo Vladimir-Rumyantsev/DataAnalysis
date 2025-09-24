@@ -32,21 +32,18 @@ def main():
         data_type=int
     )
 
-    if 0 <= b < a <= 10 ** 7 and 0 <= n <= 10 ** 9:
-        if a <= 10 ** 5 or n <= 10 ** 7:
-            details = n
-            refuse = n * b
-            n = 0
-            while refuse >= a:
-                n += refuse // a
-                refuse = refuse % a
-                details += n
-                refuse += n * b
-                n = 0
-        else:
-            x = (n * b) // a
-            details = ((n * a) - b) // (a - b)
-        print(details)
+    if n == 0:
+        print(0)
+    else:
+        low = 0
+        high = n + (a * n + b) // (a - b) + 1
+        while low < high:
+            mid = (low + high + 1) // 2
+            if mid <= n + ((mid - 1) * b) // a:
+                low = mid
+            else:
+                high = mid - 1
+        print(low)
 
 
 if __name__ == '__main__':
