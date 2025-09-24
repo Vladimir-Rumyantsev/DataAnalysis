@@ -61,10 +61,7 @@ def main():
         result.append(str(digit))
         remaining_sum -= digit
 
-    if remaining_sum != 0:
-        print("NO")
-    else:
-        print(''.join(result))
+    print(''.join(result))
 
 
 if __name__ == '__main__':

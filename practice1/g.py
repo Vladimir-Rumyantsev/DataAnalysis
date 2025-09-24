@@ -7,7 +7,7 @@
 
 Формат ввода:
 В первой строке содержится целое положительное число a — масса одной заготовки.
-Во второй строке — целое неотрицательное число b — масса опилок от изготовления одной детали. 0≤b<a≤10^7.
+Во второй строке — целое неотрицательное число b — масса опилок от изготовления одной детали. 0 ≤ b < a ≤ 10^7.
 В третьей строке содержится целое неотрицательное число n — начальное количество заготовок (0 ≤ n ≤ 10^9).
 
 Формат вывода:
@@ -38,29 +38,27 @@ def main():
     a: int = input_number(
         prompt="",
         min_val=1,
+        max_val=10**7,
         data_type=int
     )
     b: int = input_number(
         prompt="",
+        min_val=0,
+        max_val=a-1,
         data_type=int
     )
     n: int = input_number(
         prompt="",
+        min_val=0,
+        max_val=10**9,
         data_type=int
     )
 
-    if n == 0:
-        print(0)
-    else:
-        low = 0
-        high = n + (a * n + b) // (a - b) + 1
-        while low < high:
-            mid = (low + high + 1) // 2
-            if mid <= n + ((mid - 1) * b) // a:
-                low = mid
-            else:
-                high = mid - 1
-        print(low)
+    if n == 0 or b == 0:
+        print(n)
+        return
+
+    print(((n*a)-b)//(a-b))
 
 
 if __name__ == '__main__':
