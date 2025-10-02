@@ -108,11 +108,15 @@ def main():
             try:
                 new_data: list[str] = input(f"{i + 1}.: ").split()
                 if len(new_data) == 2 and new_data[0] in names:
-                    expenses[new_data[0]] += int(float(new_data[1]) * 100)
-                    break
+                    cost: int = int(float(new_data[1]) * 100)
+                    if cost > 0:
+                        expenses[new_data[0]] += cost
+                        break
+                    else:
+                        print("Ошибка. Цена покупки не может быть <= 0.")
                 else:
                     print("Ошибка. Проверьте формат ввода и имя участника.")
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, OverflowError):
                 print("Ошибка. Сумма должна быть числом.")
 
     total: int = sum(expenses.values())
