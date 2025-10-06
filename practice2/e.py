@@ -51,26 +51,50 @@ def main():
         f'\nВведите информацию об {n} покупок, по одной в каждой строчке '
         f'в формате "<ДД.ММ.ГГГГ> <название пиццы> <рубли.копейки>".'
     )
+
     for i in range(n):
-        while True:
+        for _ in range(10):
+            input_parts: list[str] = input(f"\n{i + 1}.: ").strip().split()
+
+            if len(input_parts) < 3:
+                print("Ошибка: недостаточно данных")
+                continue
+
+            date_str: str = input_parts[0]
+            price_str: str = input_parts[-1]
+            pizza_name: str = ' '.join(input_parts[1:-1])
+
+            if not pizza_name:
+                print("Ошибка: отсутствует название пиццы")
+                continue
+
             try:
-                new_data: list[str] = input(f"\n{i + 1}.: ").split()
-                if len(new_data) == 3 and len(new_data[1]) >= 2:
-                    purchase_date: date = datetime.strptime(new_data[0], "%d.%m.%Y").date()
-                    pizza_name: str = f"{new_data[1][0].upper()}{new_data[1][1:].lower()}"
-                    cost: int = int(float(new_data[2]) * 100)
-                    if cost > 0:
-                        if pizza_name in pizza_orders:
-                            pizza_orders[pizza_name].append((purchase_date, cost))
-                        else:
-                            pizza_orders[pizza_name] = [(purchase_date, cost)]
-                        break
-                    else:
-                        print("Ошибка. Вы указали неположительную цену пиццы.")
-                else:
-                    print("Ошибка. Проверьте формат ввода.")
-            except (ValueError, TypeError, OverflowError):
-                print("Ошибка. Проверьте формат ввода.")
+                purchase_date: date = datetime.strptime(date_str, "%d.%m.%Y").date()
+            except ValueError:
+                print("Ошибка: неверно указана дата покупки пиццы")
+                continue
+
+            price_parts: list[str] = price_str.split('.')
+            if not ((len(price_parts) == 1) or (len(price_parts) == 2 and len(price_parts[1]) <= 2)):
+                print("Ошибка: неверно указана цена пиццы")
+                continue
+            try:
+                cost: int = int(float(price_str) * 100)
+            except (ValueError, OverflowError):
+                print("Ошибка: неверно указана цена пиццы")
+                continue
+            if cost <= 0:
+                print("Ошибка: цена должна быть положительной")
+                continue
+
+            pizza_name = pizza_name.capitalize()
+
+            if pizza_name in pizza_orders:
+                pizza_orders[pizza_name].append((purchase_date, cost))
+            else:
+                pizza_orders[pizza_name] = [(purchase_date, cost)]
+
+            break
 
     if not pizza_orders:
         print("Пицц нет")
@@ -86,32 +110,26 @@ def main():
         data_for_a.append((pizza_name, len(pizza_orders[pizza_name])))
 
         for purchase_tuple in pizza_orders[pizza_name]:
-            if purchase_tuple[0] in unsorted_data_for_b:
-                unsorted_data_for_b[purchase_tuple[0]] += 1
-            else:
-                unsorted_data_for_b[purchase_tuple[0]] = 1
-
             pizza_date = purchase_tuple[0]
             pizza_cost = purchase_tuple[1]
+
+            if pizza_date in unsorted_data_for_b:
+                unsorted_data_for_b[pizza_date] += pizza_cost
+            else:
+                unsorted_data_for_b[pizza_date] = pizza_cost
+
             if (not data_for_c) or (pizza_cost == data_for_c[0][2]):
                 data_for_c.append((pizza_name, pizza_date, pizza_cost))
             elif pizza_cost > data_for_c[0][2]:
                 data_for_c = [(pizza_name, pizza_date, pizza_cost)]
 
-            data_for_d += purchase_tuple[1]
+            data_for_d += pizza_cost
             number_of_orders += 1
 
-    data_for_a.sort(key=lambda x: x[1])
+    data_for_a.sort(key=lambda x: -x[1])
     data_for_b: list[tuple[date, int]] = sorted(unsorted_data_for_b.items(), key=lambda x: x[0])
-    data_for_d /= number_of_orders * 100
+    data_for_d /= (number_of_orders * 100)
 
-    # print(f"\nа) список всех пицц:", *data_for_a, sep="\n")
-    # print(f"\n————————————————————————————————————————————————————————————————\n"
-    #       f"\nб) список всех дат:", *data_for_b, sep="\n")
-    # print(f"\n————————————————————————————————————————————————————————————————\n"
-    #       f"\nв) информация о самом дорогом заказе:", *data_for_c, sep="\n")
-    # print(f"\n————————————————————————————————————————————————————————————————\n"
-    #       f"\nг) средняя стоимость заказа: {round(data_for_d, 2)}")
     print(f"\n————————————————————————————————————————————————————————————————\n"
           f"\nа) список всех пицц:")
     for i in data_for_a:
