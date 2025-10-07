@@ -15,6 +15,7 @@ all_lines = mbox.split('\n')
 """
 
 
+import re
 import requests
 from collections import Counter
 
@@ -27,11 +28,20 @@ def main() -> None:
     counter: Counter = Counter()
 
     for line in download_data():
-        if line.startswith("From: "):
-            counter[line[5:].strip().lower()] += 1
+        if re.match(r"[Ff]rom:.+@", line) is not None:
+            line_split: list = line.split()
+            if len(line_split) >= 2:
+                counter[line_split[1].lower()] += 1
 
-    max_count = max(counter.values())
-    most_common: list[tuple[str, int]] = [(email, count) for email, count in counter.items() if count == max_count]
+    max_count: int = 0
+    most_common: list[tuple[str, int]] = []
+
+    for email, count in counter.items():
+        if count > max_count:
+            most_common = [(email, count)]
+            max_count = count
+        elif count == max_count:
+            most_common.append((email, count))
 
     if not most_common:
         print(f'\nНе найден ни один почтовый отправитель.')
@@ -40,10 +50,12 @@ def main() -> None:
         key, count = most_common[0]
         print(f'\nСамый частый почтовый отправитель: "{key}" встречается {count} раз(а).')
     else:
-        print(f'\nНайдено несколько самых частых почтовых отправителей:')
+        print(
+            f'\nНайдено несколько самых частых почтовых отправителей, '
+            f'каждый из которых встречается {most_common[0][1]} раз(а):'
+        )
         for i in most_common:
-            key, count = i
-            print(f'Отправитель: "{key}" встречается {count} раз(а).')
+            print(f'Отправитель: "{i[0]}".')
 
     keys_list = list(counter.keys())
     print("\nВсе почтовые отправители:", *keys_list, sep="\n")
