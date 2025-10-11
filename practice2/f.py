@@ -28,7 +28,7 @@ def main() -> None:
     counter: Counter = Counter()
 
     for line in download_data():
-        if re.match(r"[Ff]rom:.+@", line) is not None:
+        if re.match(r"From .+@", line) is not None:
             line_split: list = line.split()
             if len(line_split) >= 2:
                 counter[line_split[1].lower()] += 1
