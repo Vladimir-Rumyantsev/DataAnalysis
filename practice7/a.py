@@ -11,47 +11,8 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 # 1. Загрузка данных
 print("1. Загрузка данных...")
-
-
-# Встроенная функция для определения кодировки
-def detect_file_encoding(file_path, n_bytes=10000):
-    with open(file_path, 'rb') as f:
-        raw = f.read(n_bytes)
-
-    # Простые проверки для русских кодировок
-    if b'\xff\xfe' in raw[:2]:
-        return 'utf-16'
-    elif b'\xfe\xff' in raw[:2]:
-        return 'utf-16-be'
-    else:
-        try:
-            # Попробуем common Russian encodings
-            for encoding in ['cp1251', 'utf-8', 'iso-8859-1', 'cp866']:
-                try:
-                    raw[:100].decode(encoding)
-                    return encoding
-                except:
-                    continue
-        except:
-            pass
-    return 'utf-8'  # fallback
-
-
-try:
-    encoding = detect_file_encoding('База.csv')
-    print(f"  Определена кодировка: {encoding}")
-    df = pd.read_csv('База.csv', sep=';', encoding=encoding, low_memory=False)
-    print(f"  Загружено строк: {df.shape[0]}, столбцов: {df.shape[1]}")
-except Exception as e:
-    print(f"  Ошибка при загрузке: {e}")
-    # Попробуем альтернативные кодировки
-    for enc in ['cp1251', 'utf-8', 'windows-1251', 'iso-8859-1']:
-        try:
-            df = pd.read_csv('База.csv', sep=';', encoding=enc, low_memory=False)
-            print(f"  Успешно загружено с кодировкой: {enc}")
-            break
-        except:
-            continue
+df = pd.read_csv('База.csv', sep=';', encoding='cp1251', low_memory=False)
+print(f"  Загружено строк: {df.shape[0]}, столбцов: {df.shape[1]}")
 
 # 2. Предварительная фильтрация
 print("\n2. Предварительная фильтрация...")
